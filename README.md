@@ -13,6 +13,9 @@ The source code is tested on STM32 Nucleo 144 family boards.
 > 
 >  By the end of this course you should be able to build your own multitask FreeRTOS  real-time applications which use all the features of a modern real-time application (such as semaphores, mutexes, event flags, hooks, queues, mailboxes etc )and  test their performance.
 
+![Course Synapsis](2023-07-25_15-13-39.png)
+
+
 ### About me
 * George Calin
 * george.calin [at] gmail.com
