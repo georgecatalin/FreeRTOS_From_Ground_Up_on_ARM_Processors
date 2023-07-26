@@ -1,4 +1,4 @@
-
+/* A task with a lower priority CAN NOT interrupt a task with a higher priority */
 
 #include "main.h"
 #include "cmsis_os.h"
@@ -7,24 +7,12 @@
 UART_HandleTypeDef huart3;
 typedef uint32_t TaskProfiler;
 
-#define GREEN GPIO_PIN_12
-#define ORANGE GPIO_PIN_13
-#define RED GPIO_PIN_14
-#define BLUE GPIO_PIN_15
-
-const uint16_t *blue_led = (uint16_t *) BLUE;
-const uint16_t *orange_led = (uint16_t *) ORANGE;
-const uint16_t *red_led = (uint16_t *) RED;
-const uint16_t *green_led = (uint16_t *) GREEN;
-
-
-TaskProfiler BlueTaskProfiler, RedTaskProfiler, GreenTaskProfiler, OrangeTaskProfiler;
+TaskProfiler BlueTaskProfiler, RedTaskProfiler, GreenTaskProfiler;
 
 int __io_putchar(int ch);
 void vBlueLedControllerTask(void *pvParameters);
 void vRedLedControllerTask(void *pvParameters);
 void vGreenLedControllerTask(void *pvParameters);
-void vOrangeLedControllerTask(void *pvParameters);
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -38,10 +26,9 @@ int main(void)
   MX_GPIO_Init();
   MX_USART3_UART_Init();
 
-  xTaskCreate(vBlueLedControllerTask, "BlueLed Task", 100, (void *) blue_led, 1, NULL);
-  xTaskCreate(vBlueLedControllerTask, "RedLed Task", 100, (void *) red_led, 1, NULL);
-  xTaskCreate(vBlueLedControllerTask, "GreenLed Task", 100, (void *) green_led, 1, NULL);
-  xTaskCreate(vBlueLedControllerTask, "OrangeLed Task", 100, (void *) orange_led, 1, NULL);
+  xTaskCreate(vBlueLedControllerTask, "BlueLed Task", 100, NULL, 1, NULL);
+  xTaskCreate(vRedLedControllerTask, "RedLed Task", 100, NULL, 2, NULL);
+  xTaskCreate(vGreenLedControllerTask, "GreenLed Task", 100, NULL, 2, NULL);
 
    vTaskStartScheduler();
 
@@ -58,11 +45,30 @@ void vBlueLedControllerTask(void *pvParameters)
 	while(1)
 	{
 		//printf("BlueLedController Task is running");
-		//BlueTaskProfiler++;
-		HAL_GPIO_TogglePin(GPIOD,  (uint16_t) pvParameters);
+		BlueTaskProfiler++;
 	}
 
 }
+
+void vRedLedControllerTask(void *pvParameters)
+{
+	while(1)
+	{
+		//printf("RedLedController Task is running");
+		RedTaskProfiler++;
+	}
+}
+
+void vGreenLedControllerTask(void *pvParameters)
+{
+	while(1)
+	{
+		//printf("GreenLedController Task is running");
+		GreenTaskProfiler++;
+	}
+}
+
+
 
 int __io_putchar(int ch)
 {
@@ -163,22 +169,6 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LD1_Pin|LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
 
-  /*Configure Ports to Reset Mode */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);  // OR  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_RESET);
-
-  /*Configure the pins */
-  GPIO_InitStruct.Pin= GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-
-
-  /*Initialize the pins*/
-  HAL_GPIO_Init(GPIOD,&GPIO_InitStruct);
-
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
 
@@ -268,7 +258,6 @@ static void MX_GPIO_Init(void)
   * @param  argument: Not used
   * @retval None
   */
-
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
