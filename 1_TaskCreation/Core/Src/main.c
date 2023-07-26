@@ -13,14 +13,17 @@
 #include "cmsis_os.h"
 #include <stdio.h>
 
-
+typedef uint32_t TaskProfiler;
 UART_HandleTypeDef huart3;
 
-int __io_putchar(int ch)
-{
-	HAL_UART_Transmit(&huart3, (uint8_t *) &ch, 1, 0xFFFF);
-	return ch;
-}
+TaskProfiler BlueTaskProfiler, RedTaskProfiler, GreenTaskProfiler;
+
+int __io_putchar(int ch);
+void vBlueLedControllerTask(void *pvParameters);
+void vRedLedControllerTask(void *pvParameters);
+void vGreenLedControllerTask(void *pvParameters);
+
+
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -39,6 +42,13 @@ int main(void)
   MX_GPIO_Init();
   MX_USART3_UART_Init();
 
+  xTaskCreate(vBlueLedControllerTask, "BlueLed Task", 100, NULL, 1, NULL);
+  xTaskCreate(vRedLedControllerTask, "RedLed Task", 100, NULL, 1, NULL);
+  xTaskCreate(vGreenLedControllerTask, "GreenLed Task", 100, NULL, 1, NULL);
+
+  vTaskStartScheduler();
+
+
   while (1)
   {
 	  printf("Hello from STM32, Hombre. \n\r");
@@ -47,31 +57,49 @@ int main(void)
 }
 
 
+void vBlueLedControllerTask(void *pvParameters)
+{
+	//printf("BlueLedController Task is running");
+	BlueTaskProfiler++;
+}
+
+void vRedLedControllerTask(void *pvParameters)
+{
+	//printf("RedLedController Task is running");
+	RedTaskProfiler++;
+}
+
+void vGreenLedControllerTask(void *pvParameters)
+{
+	//printf("GreenLedController Task is running");
+	GreenTaskProfiler++;
+}
+
 void SystemClock_Config(void)
 {
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+	  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  /** Configure the main internal regulator output voltage
-  */
-  __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 168;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
+
+	  /** Configure the main internal regulator output voltage
+	  */
+	  __HAL_RCC_PWR_CLK_ENABLE();
+	  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+
+
+
+	  /** Initializes the RCC Oscillators according to the specified parameters
+	  * in the RCC_OscInitTypeDef structure.
+	  */
+	  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+	  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+	  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+	  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+	  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
 
   /** Initializes the CPU, AHB and APB buses clocks
   */
