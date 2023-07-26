@@ -27,8 +27,6 @@ int main(void)
   MX_USART3_UART_Init();
 
   xTaskCreate(vBlueLedControllerTask, "BlueLed Task", 100, NULL, 1, NULL);
-  xTaskCreate(vRedLedControllerTask, "RedLed Task", 100, NULL, 1, NULL);
-  xTaskCreate(vGreenLedControllerTask, "GreenLed Task", 100, NULL, 1, NULL);
 
    vTaskStartScheduler();
 
@@ -45,6 +43,11 @@ void vBlueLedControllerTask(void *pvParameters)
 	while(1)
 	{
 		//printf("BlueLedController Task is running");
+
+		xTaskCreate(vRedLedControllerTask, "RedLed Task", 100, NULL, 1, NULL);
+		xTaskCreate(vGreenLedControllerTask, "GreenLed Task", 100, NULL, 1, NULL);
+
+
 		BlueTaskProfiler++;
 	}
 
@@ -258,7 +261,6 @@ static void MX_GPIO_Init(void)
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask *
 
 /**
   * @brief  Period elapsed callback in non blocking mode
