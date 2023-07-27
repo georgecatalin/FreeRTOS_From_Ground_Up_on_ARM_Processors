@@ -8,6 +8,9 @@ The content within this repository is my own work produced as a result of comple
 The source code is tested on STM32 Nucleo 144 family boards.
 * https://www.st.com/en/evaluation-tools/nucleo-f429zi.html
 
+### IDE used
+STM32CubeIDE - https://www.st.com/en/development-tools/stm32cubeide.html
+
 
 ### Description
 ![Course Synapsis](2023-07-25_15-13-39.png)
