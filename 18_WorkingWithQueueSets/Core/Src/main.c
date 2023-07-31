@@ -41,9 +41,9 @@ int main(void)
     xQueueAddToSet(xQueue1,xQueueSet);
     xQueueAddToSet(xQueue2,xQueueSet);
 
-    xTaskCreate(vSenderTask1, "Sender1 Task", 100, NULL, 1, NULL);
-    xTaskCreate(vSenderTask2, "Sender2 Task", 100, NULL, 1, NULL);
-    xTaskCreate(vReceiverTask, "Receiver Task", 100, NULL, 2, NULL); // Higher priority than sender tasks
+    xTaskCreate(vSenderTask1, "Sender1 Task", 200, NULL, 1, NULL);
+    xTaskCreate(vSenderTask2, "Sender2 Task", 200, NULL, 1, NULL);
+    xTaskCreate(vReceiverTask, "Receiver Task", 200, NULL, 2, NULL); // Higher priority than sender tasks
 
     vTaskStartScheduler();
 
