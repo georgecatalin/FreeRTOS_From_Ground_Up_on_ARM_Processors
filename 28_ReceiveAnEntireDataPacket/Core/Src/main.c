@@ -7,11 +7,6 @@
 #include "adc.h"
 #include "exti.h"
 
-uint8_t status_button;
-uint32_t sensor_value;
-
-int __io_putchar(int ch);
-
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 
@@ -25,9 +20,8 @@ uint8_t *rxBuffer = NULL;
 
 SemaphoreHandle_t xDone = NULL;
 
-void handlerTask(void *pvParams);
-
 int32_t enable_rx_interrupt(uint8_t *buffer, uint16_t length);
+void handlerTask(void *pvParams);
 
 int main(void)
 {
@@ -50,9 +44,47 @@ int main(void)
   /* USER CODE END 3 */
 }
 
+uint8_t rxData[EXPECTED_PACKET_SIZE];
+char rxCode[50];
+void handlerTask(void *pvParams)
+{
+
+	for(int i=0; i<EXPECTED_PACKET_SIZE; i++)
+	{
+		rxData[i]= 0;
+	}
+
+	const TickType_t timeout =pdMS_TO_TICKS(5000);
+
+	USART3_UART_RX_Init();
+	while(1)
+	{
+		enable_rx_interrupt(rxData, EXPECTED_PACKET_SIZE);
+
+		if(xSemaphoreTake(xDone, timeout) == pdPASS)
+		{
+			if(rxIterator == EXPECTED_PACKET_SIZE)
+			{
+				sprintf(rxCode, "Received packet");
+			}
+			else
+			{
+				sprintf(rxCode, "Length mismatch");
+			}
+		}
+		else
+		{
+			sprintf(rxCode, "Timeout");
+		}
+	}
+}
+
+
+
+
 int32_t enable_rx_interrupt(uint8_t *buffer, uint16_t length)
 {
-	if( (!rxInProgress) && (buffer != NULL) )
+	if( !rxInProgress && (buffer != NULL) )
 	{
 		rxInProgress = 1;
 
@@ -91,42 +123,6 @@ void USART3_IRQHandler(void)
 	}
 
 	portYIELD_FROM_ISR(xHighestPriorityTaskWoken); //just continue with the last task, do not wake another higher priority task
-}
-
-uint8_t rxData[EXPECTED_PACKET_SIZE];
-char rxCode[50];
-void handlerTask(void *pvParams)
-{
-
-	for(int i=0; i<EXPECTED_PACKET_SIZE; i++)
-	{
-		rxData[i]= 0;
-	}
-
-	const TickType_t timeout =pdMS_TO_TICKS(5000);
-
-	USART3_UART_RX_Init();
-
-	while(1)
-	{
-		enable_rx_interrupt(rxData, EXPECTED_PACKET_SIZE);
-
-		if(xSemaphoreTake(xDone, timeout) == pdPASS)
-		{
-			if(rxIterator == EXPECTED_PACKET_SIZE)
-			{
-				sprintf(rxCode, "Received packet");
-			}
-			else
-			{
-				sprintf(rxCode, "Length mismatch");
-			}
-		}
-		else
-		{
-			sprintf(rxCode, "Timeout");
-		}
-	}
 }
 
 
