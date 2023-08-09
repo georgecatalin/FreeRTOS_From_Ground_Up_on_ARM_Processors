@@ -1,0 +1,54 @@
+Configuration	36_ChangingThreadPrioritiesUsingCMSISRTOS2
+STM32CubeMX 	6.9.1
+Date	08/09/2023
+MCU	STM32F429ZITx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+SYS	TIM1	SYS_VS_tim1	VP_SYS_VS_tim1
+USART3	Asynchronous	USART3_RX	PB11
+USART3	Asynchronous	USART3_TX	PB10
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+69	PB10	USART3_TX	
+70	PB11	USART3_RX	
+PERIPHERALS	MODES	FUNCTIONS	PINS
+SYS	TIM1	SYS_VS_tim1	VP_SYS_VS_tim1
+USART3	Asynchronous	USART3_RX	PB11
+USART3	Asynchronous	USART3_TX	PB10
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+69	PB10	USART3_TX	
+70	PB11	USART3_RX	
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : 36_ChangingThreadPrioritiesUsingCMSISRTOS2
+Project Folder : D:\CodeLab\Workshop\FreeRTOS_From_Ground_Up_on_ARM_Processors\36_ChangingThreadPrioritiesUsingCMSISRTOS2
+Toolchain / IDE : STM32CubeIDE
+Firmware Package Name and Version : STM32Cube FW_F4 V1.27.1
+
+
+Code Generation Settings : 
+STM32Cube MCU packages and embedded software packs : Copy only the necessary library files
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : No
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : 
+
+
+
+
+
